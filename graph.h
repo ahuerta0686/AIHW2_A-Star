@@ -2,6 +2,7 @@
 #include <list>
 using namespace std;
 
+template<typename T, typename C>
 class graph {
 private:
     class vertex;
@@ -9,7 +10,7 @@ private:
 
     class vertex {
     public:
-        int data;
+        T data;
         list<edge> neighbors;
     };
 
@@ -17,13 +18,13 @@ private:
     public:
         vertex* start;
         vertex* end;
-        double weight;
+        C cost;
 
         // Create a new edge from a to b with weight w
-        edge(vertex* a, vertex* b, double w) {
+        edge(vertex* a, vertex* b, C c) {
             start = a;
             end = b;
-            weight = w;
+            cost = c;
         }
     };
 
@@ -36,9 +37,9 @@ public:
 
     // Add a vertex with data value x to the graph
     // Each vertex's data value must be unique
-    bool add_vertex(int x) {
+    bool add_vertex(T x) {
         // Check that vertex is not in graph already
-        for (list<vertex*>::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
+        for (typename list<vertex*>::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
             vertex* v = *it;
             if (v->data == x)
                 return false;
@@ -52,7 +53,7 @@ public:
     }
 
     // Add an edge between two existing vertices with a weight
-    bool add_edge(int a, int b, double w) {
+    bool add_edge(T a, T b, C c) {
         // Disallow edges to self
         if (a == b)
             return false;
@@ -60,7 +61,7 @@ public:
         //Find vertices in graph with data a and b
         vertex* s = NULL;
         vertex* e = NULL;
-        for (list<vertex*>::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
+        for (typename list<vertex*>::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
             vertex* v = *it;
             if (v->data == a)
                 s = v;
@@ -69,8 +70,8 @@ public:
         }
         
         if (s != NULL && e != NULL) {
-            edge e1 = edge(s, e, w);
-            edge e2 = edge(e, s, w);
+            edge e1 = edge(s, e, c);
+            edge e2 = edge(e, s, c);
             s->neighbors.push_back(e1);
             e->neighbors.push_back(e2);
             return true;
@@ -80,12 +81,12 @@ public:
     }
 
     void print() {
-        for (list<vertex*>::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
+        for (typename list<vertex*>::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
             vertex* v = *it;
             cout << v->data << endl;
-            for (list<edge>::const_iterator it2 = v->neighbors.begin(); it2 != v->neighbors.end(); ++it2) {
+            for (typename list<edge>::const_iterator it2 = v->neighbors.begin(); it2 != v->neighbors.end(); ++it2) {
                 edge e = *it2;
-                cout << e.end->data << " : " << e.weight << endl;
+                cout << e.end->data << " : " << e.cost << endl;
             }
         }
     }
