@@ -52,7 +52,7 @@ public:
         return true; 
     }
 
-    // Add an edge between two existing vertices with a weight
+    // Add an edge between two vertices with a cost
     bool add_edge(T a, T b, C c) {
         // Disallow edges to self
         if (a == b)
@@ -69,6 +69,14 @@ public:
                 e = v;
         }
         
+        // Create vertices if they are not found
+        if (s == NULL) {
+            add_vertex(a);
+        }
+        if (e == NULL) {
+            add_vertex(b);
+        }
+
         if (s != NULL && e != NULL) {
             edge e1 = edge(s, e, c);
             edge e2 = edge(e, s, c);
