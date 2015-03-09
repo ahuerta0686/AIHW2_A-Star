@@ -13,6 +13,8 @@ using namespace std;
 #include "graph.h"
 #include "road.h"
 
+#define DEBUG 0
+
 class graph_maker {
 private:
     string point_to_point_path;
@@ -76,10 +78,14 @@ public:
                 // other locations following it
                 if (!isspace(line[0])) {
                     parent_location = line;
+                    if (!isalpha(parent_location[parent_location.length() - 1]))
+                        parent_location = parent_location.substr(0, parent_location.length() - 1);
+
                     int num_child_locations = 0;
                     getline(paths_input, line);
                     num_lines++;
-                    cout << parent_location << endl << num_child_locations << endl;
+                    if (DEBUG)
+                        cout << parent_location << endl << num_child_locations << endl;
 
                     // Path information from a parent location is noted
                     // by whitespace in front
@@ -93,17 +99,24 @@ public:
                         
                         road rd = extract_road(tokens);
                         string rd_name = extract_road_name(tokens);
-                        cout << rd_name << endl;
-                        cout << rd << endl;
+                        if (DEBUG) {
+                            cout << rd_name << endl;
+                            cout << rd << endl;
+                        }
+                        
+                        paths_graph.add_edge(parent_location, rd_name, rd);
 
                         getline(paths_input, line);
                         num_lines++;
                     }
-                    cout << "=======" << endl;
+                    if (DEBUG)
+                        cout << "=======" << endl;
                     parent_location = "";
                 }
             }
-            cout << num_lines << endl;
+            if (DEBUG)
+                cout << num_lines << endl;
+            paths_graph.print();
             return true;
         }
         else {

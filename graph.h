@@ -1,5 +1,6 @@
 #include <iostream>
 #include <list>
+#include <string>
 using namespace std;
 
 template<typename T, typename C>
@@ -41,8 +42,10 @@ public:
         // Check that vertex is not in graph already
         for (typename list<vertex*>::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
             vertex* v = *it;
-            if (v->data == x)
+            if (v->data == x) {
+                cout << "Element already in table" << endl;
                 return false;
+            }
         }
 
         // Add new vertex to graph
@@ -71,10 +74,14 @@ public:
         
         // Create vertices if they are not found
         if (s == NULL) {
+            //cout << a << " does not exist, creating" << endl;
             add_vertex(a);
+            s = vertices.back();
         }
         if (e == NULL) {
+            //cout << b << " does not exist, creating" << endl;
             add_vertex(b);
+            e = vertices.back();
         }
 
         if (s != NULL && e != NULL) {
@@ -96,6 +103,7 @@ public:
                 edge e = *it2;
                 cout << e.end->data << " : " << e.cost << endl;
             }
+            cout << endl;
         }
     }
 };
