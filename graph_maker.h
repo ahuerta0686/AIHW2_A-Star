@@ -13,7 +13,7 @@ using namespace std;
 #include "graph.h"
 #include "road.h"
 
-#define DEBUG 0
+#define DEBUG 1
 
 class graph_maker {
 private:
@@ -27,7 +27,7 @@ private:
     bool table_created;
 
     graph<string, road> paths_graph;
-    map<string, int> distances_table;
+    map<string, int> distance_table;
 
     // Based on a vector of tokens generate the proper road
     road extract_road(vector<string> t) {
@@ -51,6 +51,20 @@ private:
         return destination;
     }
 
+    // Using vector of tokens return the name and distance
+    // for a straight line distance record in a pair
+    pair<string, int> extract_sld_record(vector<string> t) {
+        string destination = "";
+        int distance = atoi(t[t.size() - 1].c_str());
+        for (int i = 0; i < t.size() - 1; i++) {
+            if (i + 1 != t.size() - 1)
+                destination += t[i] + " ";
+            else
+                destination += t[i];
+        }
+        return pair<string, int>(destination, distance);
+    }
+
 public:
     // Sets paths for input files
     graph_maker(string ptp_path, string sld_path) {
@@ -61,7 +75,7 @@ public:
         table_created = false;
     }
 
-    // Return a graph representation based on point to point information
+    // Create a graph representation based on point to point information
     bool create_graph() {
         if (!graph_created) {
             paths_input.open(point_to_point_path.c_str());
@@ -126,10 +140,48 @@ public:
         }
     }
     
+    // Return graph of locations and roads if it has been created
     graph<string, road> get_graph() {
         if (graph_created)
             return paths_graph;
         cout << "Error, call create_graph() first" << endl;
         return graph<string, road>();
+    }
+
+    bool create_table() {
+        if (!table_created) {
+            distance_input.open(straight_line_distance_path.c_str());
+            int num_lines = 0;
+            
+            // Read in first line
+            string line;
+            getline(distance_input, line);
+            num_lines++;
+            while (!distance_input.eof()) {
+                // Tokenize path information
+                istringstream iss(line);
+                vector<string> tokens;
+                copy(istream_iterator<string>(iss), istream_iterator<string>(), back_inserter(tokens));
+                
+                pair<string, int> record = extract_sld_record(tokens);
+                distance_table.insert(record);
+                getline(distance_input, line);
+                num_lines++;
+            }
+            if (DEBUG)
+                cout << num_lines << endl;
+            table_created = true;
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    map<string, int> get_table() {
+        if (table_created)
+            return distance_table;
+        cout << "Error, call create_table() first" << endl;
+        return map<string, int>();
     }
 };
