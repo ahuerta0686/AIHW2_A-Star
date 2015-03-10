@@ -114,13 +114,22 @@ public:
                     parent_location = "";
                 }
             }
-            if (DEBUG)
+            if (DEBUG) {
                 cout << num_lines << endl;
-            paths_graph.print();
+                paths_graph.print();
+            }
+            graph_created = true; 
             return true;
         }
         else {
             return false;
         }
+    }
+    
+    graph<string, road> get_graph() {
+        if (graph_created)
+            return paths_graph;
+        cout << "Error, call create_graph() first" << endl;
+        return graph<string, road>();
     }
 };
