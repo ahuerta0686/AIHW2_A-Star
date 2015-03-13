@@ -1,6 +1,6 @@
 #include "graph_maker.h"
 
-bool astar(graph<string, road> paths, map<string, int> distances, string start_location = "Blue Mountains");
+bool astar(graph<string, road> paths, map<string, int> distances, int heuristic = 0, string start_location = "Blue Mountains");
 vector<graph<string, road>::vertex*>::iterator get_min_vector(vector<graph<string, road>::vertex*> v);
 string get_path(string start_location, graph<string, road> paths_graph);
 
@@ -13,7 +13,7 @@ int main() {
     generator.create_table();
     map<string, int> distance_table = generator.get_table();
     
-    astar(paths_graph, distance_table);
+    astar(paths_graph, distance_table, 2);
     
     cout << get_path("Blue Mountains", paths_graph) << endl;
 
@@ -21,7 +21,7 @@ int main() {
 }
 
 // A* Algorithm, requires a graph of the locations and distances to the final point
-bool astar(graph<string, road> paths, map<string, int> distances, string start_location) {
+bool astar(graph<string, road> paths, map<string, int> distances, int heuristic, string start_location) {
     const string destination = "Iron Hills";    
 
     vector<graph<string, road>::vertex*> visited_vertices;
@@ -60,7 +60,17 @@ bool astar(graph<string, road> paths, map<string, int> distances, string start_l
             if (skip_edge)
                 continue;
 
-            double temp_cost = current_vertex->cost + e.cost.distance;
+            // This is where the heuristic matters
+            double temp_cost;
+            if (heuristic == 0)
+                temp_cost = current_vertex->cost + e.cost.distance;
+            else if (heuristic == 1)
+                temp_cost = current_vertex->cost + e.cost.distance * (e.cost.quality + 1) / e.cost.risk;
+            else if (heuristic == 2)
+                temp_cost = current_vertex->cost + e.cost.distance + e.cost.distance * (e.cost.quality - 2 * e.cost.risk);
+            else
+                return false;
+    
             double temp_estimated_cost = temp_cost + distances[e.end->data];
             
             // If not in open_vertices insert
@@ -85,6 +95,7 @@ bool astar(graph<string, road> paths, map<string, int> distances, string start_l
                 
         }
     }
+    return false;
 }
 
 // Return a string with the shortest path according to A*
