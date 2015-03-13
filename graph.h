@@ -5,7 +5,7 @@ using namespace std;
 
 template<typename T, typename C>
 class graph {
-private:
+public:
     class vertex;
     class edge;    
 
@@ -13,6 +13,24 @@ private:
     public:
         T data;
         list<edge> neighbors;
+        
+        bool visited;
+        double cost;
+        double estimated_cost;
+        vertex* pred;
+
+        vertex() {
+            visited = false;
+            cost = 0;
+            estimated_cost = 0;
+            pred = NULL;
+        }
+
+        bool operator>(const vertex &rhs) {
+            if (this.estimated_cost > rhs.estimated_cost)
+                return true;
+            return false;
+        }
     };
 
     class edge {
@@ -93,6 +111,15 @@ public:
         }
         else
             return false;
+    }
+    
+    vertex* find_vertex(string a) {
+        for (typename list<vertex*>::const_iterator it = vertices.begin(); it != vertices.end(); ++it) {
+            vertex* v = *it;
+            if (v->data == a)
+                return v;
+        }
+        return NULL;
     }
 
     void print() {
